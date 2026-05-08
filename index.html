@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>June 7</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f2ec;
+      --ink: #1a1814;
+      --muted: #9e9a92;
+      --accent: #c0392b;
+      --line: rgba(26,24,20,0.12);
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Mono', monospace;
+      overflow: hidden;
+    }
+
+    /* Subtle grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      background-size: 180px;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.6;
+    }
+
+    .page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 40px 24px;
+      position: relative;
+    }
+
+    /* Top label */
+    .label {
+      font-family: 'DM Mono', monospace;
+      font-weight: 300;
+      font-size: clamp(9px, 1.1vw, 11px);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.2s forwards;
+    }
+
+    /* Big date heading */
+    .heading {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(52px, 10vw, 130px);
+      line-height: 0.9;
+      text-align: center;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin-bottom: 60px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.4s forwards;
+    }
+
+    .heading em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    /* Divider */
+    .divider {
+      width: 1px;
+      height: 40px;
+      background: var(--line);
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.6s forwards;
+    }
+
+    /* Countdown grid */
+    .countdown {
+      display: flex;
+      align-items: flex-end;
+      gap: clamp(20px, 4vw, 56px);
+      opacity: 0;
+      animation: fadeUp 1s ease 0.8s forwards;
+    }
+
+    .unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .value {
+      font-family: 'DM Mono', monospace;
+      font-weight: 400;
+      font-size: clamp(36px, 6vw, 80px);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      min-width: 2ch;
+      text-align: center;
+      transition: opacity 0.1s ease;
+    }
+
+    .value.tick {
+      opacity: 0.4;
+    }
+
+    .unit-label {
+      font-family: 'DM Mono', monospace;
+      font-weight: 300;
+      font-size: clamp(8px, 0.9vw, 10px);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .sep {
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(24px, 4vw, 52px);
+      color: var(--line);
+      line-height: 1;
+      padding-bottom: 18px;
+      user-select: none;
+    }
+
+    /* Done state */
+    .done-msg {
+      display: none;
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: clamp(28px, 5vw, 64px);
+      color: var(--accent);
+      text-align: center;
+    }
+
+    /* Bottom note */
+    .footer {
+      position: absolute;
+      bottom: 28px;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeUp 1s ease 1.2s forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="label">Counting down to</p>
+
+    <h1 class="heading">June&nbsp;<em>7</em></h1>
+
+    <div class="divider"></div>
+
+    <div class="countdown" id="countdown">
+      <div class="unit">
+        <span class="value" id="days">00</span>
+        <span class="unit-label">days</span>
+      </div>
+      <div class="sep">·</div>
+      <div class="unit">
+        <span class="value" id="hours">00</span>
+        <span class="unit-label">hours</span>
+      </div>
+      <div class="sep">·</div>
+      <div class="unit">
+        <span class="value" id="minutes">00</span>
+        <span class="unit-label">min</span>
+      </div>
+      <div class="sep">·</div>
+      <div class="unit">
+        <span class="value" id="seconds">00</span>
+        <span class="unit-label">sec</span>
+      </div>
+    </div>
+
+    <p class="done-msg" id="doneMsg">it's here ✦</p>
+
+    <p class="footer">&#9670; see you there</p>
+  </div>
+
+  <script>
+    const pad = n => String(n).padStart(2, '0');
+
+    function getTarget() {
+      // June 7th of current year (or next year if already past)
+      const now = new Date();
+      let target = new Date(now.getFullYear(), 5, 7, 0, 0, 0); // month is 0-indexed
+      if (target <= now) {
+        target = new Date(now.getFullYear() + 1, 5, 7, 0, 0, 0);
+      }
+      return target;
+    }
+
+    const target = getTarget();
+    const dEl = document.getElementById('days');
+    const hEl = document.getElementById('hours');
+    const mEl = document.getElementById('minutes');
+    const sEl = document.getElementById('seconds');
+    const countdown = document.getElementById('countdown');
+    const doneMsg = document.getElementById('doneMsg');
+
+    function tick(el, val) {
+      if (el.textContent !== val) {
+        el.classList.add('tick');
+        setTimeout(() => {
+          el.textContent = val;
+          el.classList.remove('tick');
+        }, 80);
+      }
+    }
+
+    function update() {
+      const now = new Date();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        countdown.style.display = 'none';
+        doneMsg.style.display = 'block';
+        return;
+      }
+
+      const days    = Math.floor(diff / 86400000);
+      const hours   = Math.floor((diff % 86400000) / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+
+      tick(dEl, pad(days));
+      tick(hEl, pad(hours));
+      tick(mEl, pad(minutes));
+      tick(sEl, pad(seconds));
+    }
+
+    update();
+    setInterval(update, 1000);
+  </script>
+</body>
+</html>
