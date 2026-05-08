@@ -209,9 +209,9 @@
     function getTarget() {
       // June 7th of current year (or next year if already past)
       const now = new Date();
-      let target = new Date(now.getFullYear(), 5, 7, 0, 0, 0); // month is 0-indexed
+      let target = new Date(now.getFullYear(), 5, 7, 19, 35, 0); // month is 0-indexed
       if (target <= now) {
-        target = new Date(now.getFullYear() + 1, 5, 7, 0, 0, 0);
+        target = new Date(now.getFullYear() + 1, 5, 7, 19, 35, 0);
       }
       return target;
     }
