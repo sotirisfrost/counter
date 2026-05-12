@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>June 7</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23f5f2ec'/%3E%3Ctext x='50%25' y='54%25' text-anchor='middle' dominant-baseline='middle' font-family='Georgia,serif' font-size='42' font-style='italic' fill='%23c0392b'%3E7%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
@@ -140,6 +141,17 @@
       user-select: none;
     }
 
+    /* Fireworks canvas */
+    #fireworks {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 50;
+      display: none;
+    }
+
     /* Done state */
     .done-msg {
       display: none;
@@ -169,6 +181,8 @@
   </style>
 </head>
 <body>
+  <canvas id="fireworks"></canvas>
+
   <div class="page">
     <p class="label">Counting down to</p>
 
@@ -207,7 +221,7 @@
     const pad = n => String(n).padStart(2, '0');
 
     function getTarget() {
-      // June 7th of current year (or next year if already past)
+      // June 7th of current year (19:35:00 local time)
       const now = new Date();
       let target = new Date(now.getFullYear(), 5, 7, 19, 35, 0); // month is 0-indexed
       if (target <= now) {
@@ -223,6 +237,70 @@
     const sEl = document.getElementById('seconds');
     const countdown = document.getElementById('countdown');
     const doneMsg = document.getElementById('doneMsg');
+    const fireworksCanvas = document.getElementById('fireworks');
+    const fwCtx = fireworksCanvas.getContext('2d');
+    let fireworksStarted = false;
+    let particles = [];
+
+    function resizeFireworks() {
+      fireworksCanvas.width = window.innerWidth;
+      fireworksCanvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeFireworks);
+    resizeFireworks();
+
+    function launchFirework() {
+      const x = Math.random() * fireworksCanvas.width;
+      const y = Math.random() * fireworksCanvas.height * 0.45 + fireworksCanvas.height * 0.08;
+      const colors = ['#c0392b', '#1a1814', '#d9a441', '#9e9a92'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      for (let i = 0; i < 70; i++) {
+        const angle = (Math.PI * 2 * i) / 70;
+        const speed = Math.random() * 4 + 1.5;
+        particles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          alpha: 1,
+          size: Math.random() * 2 + 1,
+          color
+        });
+      }
+    }
+
+    function animateFireworks() {
+      fwCtx.clearRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+      fwCtx.globalCompositeOperation = 'source-over';
+
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.035;
+        p.alpha -= 0.012;
+
+        fwCtx.globalAlpha = Math.max(p.alpha, 0);
+        fwCtx.fillStyle = p.color;
+        fwCtx.beginPath();
+        fwCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        fwCtx.fill();
+      });
+
+      fwCtx.globalAlpha = 1;
+      particles = particles.filter(p => p.alpha > 0);
+      requestAnimationFrame(animateFireworks);
+    }
+
+    function startFireworks() {
+      if (fireworksStarted) return;
+      fireworksStarted = true;
+      fireworksCanvas.style.display = 'block';
+      launchFirework();
+      setInterval(launchFirework, 850);
+      animateFireworks();
+    }
 
     function tick(el, val) {
       if (el.textContent !== val) {
@@ -241,6 +319,7 @@
       if (diff <= 0) {
         countdown.style.display = 'none';
         doneMsg.style.display = 'block';
+        startFireworks();
         return;
       }
 
